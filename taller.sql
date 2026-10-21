@@ -21,7 +21,7 @@ REFERENCES proveedores(id_proveedor)
 ON DELETE SET NULL;
 
 
--------3. 
+-------3.
 CREATE TABLE direcciones_envio (
     id_direccion int AUTO_INCREMENT,
     id_cliente int NOT NULL,
@@ -43,7 +43,7 @@ ADD CONSTRAINT ck_productos_precio_max
 CHECK (precio <= 50000000);
 
 
------5. 
+-----5.
 CREATE index idx_clientes_ciudad
 ON clientes(ciudad);
 
