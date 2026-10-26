@@ -17,7 +17,7 @@ SET id_proveedor = 3
 WHERE categoria = (SELECT id_categoria FROM categorias WHERE nombre = "papeleria");
 
 --2.liste TODOS los productos con su categoria y el nombre de su proveedor (los que no tienen proveedor deben aparecer igual)
-SELECT 
+SELECT
  p.nombre AS producto,
  c.nombre AS categoria,
 COALESCE(pr.razon_social, 'sin proveedor'AS proveedor
