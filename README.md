@@ -54,7 +54,14 @@ React solo se encarga de la interfaz grafica para el resto utilizamos:
 - 1 verifique que tenga node.js (node -v)cmd
 - 2 Desde la raiz de proyecto crea el proyecto con react y vite
 `npm create vite@latest frontend -- -- template react`
-- 3 entre a carpeta fronted con `cd fronted` y instale npm `npm install`
+- 3 entre a carpeta fronted con `cd frontend` y instale npm `npm install`
 - 4 instale la librerias: `npm install bootstrap bootstrap-icons react-router-dom axios`
-- 5
-
+- 5 empaquetador optimisa y junta todo el css en un solo archivo al hacer `npm run build`
+- 6 instalar las dependencias del backend t frontend al tiempo `npm run install:all`
+- 7 ingresar la carpeta backend y colocar `npm init -y`
+- 8 instalar dependencias
+- 8.1 `npm install express mysql2 bcryptjs jsonwebtoken cors dotenv`
+- 8.2 crea  .env  dentro de backend para las variables de entorno
+- 8.3 crea src/config/db.js  conexion con DB
+- 8.4 crea src/middlewares/verificartoken.js valida el token JWT en rutas protegidas 
+- 8.5 crea src/controllers/auth.controller. js es la logica de inicio de sesion
