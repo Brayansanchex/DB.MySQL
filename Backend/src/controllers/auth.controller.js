@@ -13,7 +13,7 @@ const jwt = require('jsonwebtoken');
 //pool para conexiones mysql configurado en config/db.js
 const pool = require('../config/db');
 //cargaa las variables de .env (JWT_SECRET, JWT_EXPIRES_IN)
-require('dontenv').config();
+require('dotenv').config();
 
 //post /api/auth/login
 //Recibe {email, password} y devuelve {token, usuario}si son correctos
@@ -65,7 +65,7 @@ async function login(req, res0) {
          * demostrear, en cada peticion futura que ya inicio sesion 
          */
         const token = jwt.sign(
-        {id: usuario.id, email: usuario.email, rol: usuarios.rol } //datos dentro del token 
+        {id: usuario.id, email: usuario.email, rol: usuarios.rol }, //datos dentro del token 
         process.env. JWT_SECRET, //firma secreta
         {expiresIn: process.env.JWT_EXPIRES_IN || '8h'} //tiempo de vida enn el token
         );
@@ -95,10 +95,10 @@ return res.json({
 async function perfil(req, res) {
     //req.usuario fue puesto puesto por el middleware verificarToken
     return res.json({ usuario: req.usuario });
-
-    //exportamos ambas funciones para authroutess.js pueda conectarlas // con las urls correspondientes
-    module.exports = {
-        login,
-        perfil,
-    };
 }
+
+//exportamos ambas funciones para authroutess.js pueda conectarlas con las urls correspondientes
+module.exports = {
+    login,
+    perfil,
+};

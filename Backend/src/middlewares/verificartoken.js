@@ -40,6 +40,7 @@ function verificarToken(req, res, next) {
     } catch (error) {
         //si el token esta vencido o fue alterado, jwt.verify lanza un error
         return res.status(401).json({ mensaje: 'Token de autenticacion invalido o expirado' });
+    }
 }
 
 //Exportamos
