@@ -84,4 +84,21 @@ return res.json({
         rol: usuario.rol,
     },
 });
+} catch (error) {
+    console.error('Error en login:', error);
+    return res.status(500).json({ mensaje: 'error del servidor al iniciar sesion' });
+}
+}
+//GET/api/auth/perfil
+//Ruta protegida de ejemplo solo responde a personas si el middleware
+//verificarToken confirmo que el token es valido
+async function perfil(req, res) {
+    //req.usuario fue puesto puesto por el middleware verificarToken
+    return res.json({ usuario: req.usuario });
+
+    //exportamos ambas funciones para authroutess.js pueda conectarlas // con las urls correspondientes
+    module.exports = {
+        login,
+        perfil,
+    };
 }

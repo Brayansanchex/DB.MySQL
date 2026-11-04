@@ -16,4 +16,4 @@ CREATE TABLE IF NOT EXISTS usuarios (
 
 
 INSERT INTO usuarios (id, nombre, email, password, rol, estado, creado_en) VALUES
-(1,'administradoir', 'admin@inventario.com', '$2b$10$2PAK3.8y/Y.m.dlHm3NDRuoM1Jj3JDK.2PCbJ9qMrcywFyQmzVZSe', 'admin', 1, '2026-10-28 16:40:300');
+(1,'administradoir', 'admin@inventario.com', '$2b$10$2PAK3.8y/Y.m.dlHm3NDRuoM1Jj3JDK.2PCbJ9qMrcywFyQmzVZSe', 'admin', 1, '2026-10-28 16:40:30');
