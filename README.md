@@ -68,3 +68,8 @@ React solo se encarga de la interfaz grafica para el resto utilizamos:
 - 8.6 crea src/routes/auth.routes.js 
 - 8.7 crea src/server.js  arma la app de express
 - 8.8 crea en backend seed.js crea el usuario administradora
+- 9 crear las siguientes carpetas en frontend
+- 9.1 src/api/axiosClient.js
+- 9.2 src/api/authService.js
+- 9.3 src/context/AuthContext.jsx
+- 9.4 src/page/LoginPage.jsx
