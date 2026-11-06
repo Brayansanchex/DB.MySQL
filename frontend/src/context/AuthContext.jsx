@@ -38,10 +38,57 @@ if (usuarioGuardado && tokenGuardado)
 {
     setUsuario(JSON.parse(usuarioGuardado));
 }
-})
 
+setGuardado(false);
+}, []);
+
+//funcion de login: lo llama LoginPage cuano el usarioenvia el formulario
+async function login(email, password) {
+    //puede lanzar un error (por ejemplo credenciales invalidas)
+    //dejamos que LoginPage lo capture con try/catch para mostrar el mensaje
+const { token, usuario: UsuarioRecibido } = await iniciarSesion (email, password)
+
+// Guardamos la sesion en el localStorage para que sobreviva a un F5
+localStorage.setItem('token',token);
+localStorage.setItem('usuario',JSON.stringify (UsuarioRecibido));
+
+//Actualizamos el estado en meoria para la UI reacciones al instante
+setUsuario(UsuarioRecibido)
 }
 
+//Funcion de logout borra la sesion tant del localStorage como el estado
+function logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
+    setUsuario(null);
+}
 
+//valor que va a estar disponible para cualquier componente que use useAuth()
+const value = {
+    usuario,
+    cargando,
+    estaAutenticado: !!usuario,
+// convierte usuario (objeto o null) en true o false
+    login,
+    logout,
+};
 
+//todo lo que esta dentro del <AuthProvider>...</AuthProvider> osea
+//Children, toda la app pede leer value con useAuth()
+return <AuthContext.Provider value = {value} ></AuthContext.Provider>;
+}
+
+/**
+ * Hooke personalizado para consumir el contexto mas facil:
+ * en vez de useContext(AuthContext) los componentes hacen useAuth()
+ */
+export Function useAuth() {
+    //lee el valor actual del contexto (Usuario, cargando, login, logout)
+const contexto = useContext (AuthContext);
+//Si alguine usa useAuth() fuera de <AuthProvider> contexto seria null:
+//avisamos con un error claro en vez de fallar mas adelante en forma confunsa
+if(!contexto) {
+    throw new Error('useAuth debe usarse dentro de un <authProvider>');
+}
+}
 
