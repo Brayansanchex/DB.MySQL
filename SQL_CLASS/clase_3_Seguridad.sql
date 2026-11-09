@@ -163,7 +163,7 @@ END //
 
 DELIMITER ;
 
-
+DELIMITER //
 --3.3 cambiar contraseña:exige la clave actual y genera salt nuevo 
 CREATE PROCEDURE sp_cambiar_password(
     IN p_nombre_usuario VARCHAR(50);
@@ -176,14 +176,14 @@ CREATE PROCEDURE sp_cambiar_password(
 
     IF NOT EXISTS (SELECT 1 FROM usuarios
     WHERE nombre_usuario = p_nombre_usuario
-    AND password_hash = SHA (CONCAT(salt, p_password_actual), 256)) THEN 
+    AND password_hash = SHA2(CONCAT(salt, p_password_actual), 256)) THEN 
     SET p_resultado = 'la contraseña actual no es correcta';
     ELSEIF  CHAR_LENGTH(p_password_nueva) < 8
     OR CAST(p_password_nueva AS BINARY) = CAST(LOWER
     (p_password_nueva) AS BINARY)
     OR p_password_nueva NOT REGEXP '[0-9]' THEN 
     SET p_resultado = 'la nueva contraseña no cumple la politica';
-    SET v_salt_nuevo = LEFT(SHA2(CONCAT(UUDI(), RAND(), NOW (6)), 256)32);
+    SET v_salt_nuevo = LEFT(SHA2(CONCAT(UUDI(), RAND(), NOW (6)), 256), 32);
     UPDATE usuarios 
     SET salt = v_salt_nuevo,
     password_hash = SHA2(CONCAT(v_salt_nuevo, p_password_nueva), 256)
@@ -193,3 +193,75 @@ CREATE PROCEDURE sp_cambiar_password(
     END //
     DELIMITER;
     
+
+    /*Auditoria trigger que registra eventos de seguridad INSERT, UPDATE O DELETE sobre la tabla 
+    guardamos quien y cuando cambiouna clave o se bloqueo el usuario
+    nunca se daña la contraseña en la auditoria 
+    */
+    CREATE TABLE IF NOT EXISTS auditoria_usuarios (
+        id_auditoria INT AUTO_INCREMENT PRIMARY KEY,
+        id_usuario INT NOT NULL,
+        accion VARCHAR(30) NOT NULL,
+        detalle VARCHAR(255) NULL,
+        usuario_bd VARCHAR(100) NOT NULL, --usuario de mySql que hizo el cambio
+        fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    ) ENGINE = InnoDB;
+
+    DROP TRIGGER IF EXISTS trg_usuarios_auditoria
+
+    CREATE TRIGGER trg_usuarios_auditoria
+    AFTER UPDATE ON usuarios
+    FOR EACH ROW//Se ejecuta por fila modificada 
+    BEGIN
+    --OLD = valores antes del UPDATE, NEW = valores despues 
+    IF NEW.password_hash <> OLD.password_hash
+    THEN
+    INSERT INTO auditoria_usuarios (id_usuario, accion, detalle, usuario_bd)
+    VALUES (new.id_usuario, 'CAMBIO_PASSWORD', 'se cambio la contraseña', CURRENT_USER());
+    END IF;
+
+    IF NEW.bloqueado = TRUE AND OLD.bloqueado = FALSE THEN 
+    INSERT INTO auditoria_usuarios (id_usuario, accion, detalle, usuario_bd)
+    VALUES (NEW.id_usuario, 'BLOQUEO', 'Bloqueado por 3 intentos fallidos', CURRENT_USER());
+    END IF;
+    END//
+
+    /* Probar registro login bloqueado y cambio de clave 
+    --registrar usuarios (las claves solo viajan comop parametro y nunca se guardan)´*/
+    CALL sp_registrar_usuario('admin', 'admin@tienda.com', 'Admin*2026Seguro', 'ADMIN', NULL);
+    CALL sp_registrar_usuario('vendedor', 'ventas@tienda.com', 'Ventas*2026Seguro', 'VENDEDOR', NULL);
+    CALL sp_registrar_usuario('ana.gomez', 'ana.gomez@tienda.com', 'AnaGomez2026', 'CLIENTE', 1);
+    CALL sp_registrar_usuario('carlos.perez', 'carlos.perez@tienda.com', 'Carlos2026!', 'CLIENTE', 2);
+    CALL sp_registrar_usuario('debil', 'debil@tienda.com', '12345', 'CLIENTE', NULL);--Lo debe rechazar por tener una contraseña debil
+
+    /*la contraseña no se ve en texto plano solo el hash y salt
+    SELECT el hash y salt*/
+    SELECT id_usuario, nombre_usuario, rol, salt, password_hash
+    FROM usuarios;
+    
+    /*login correcto*/
+    CALL sp_login('ana.gomez', 'AnaGomez2026', @resultado);
+    SELECT @resultado AS login_correcto;
+
+    /* tres intentos fallidos -> bloqueo*/
+    CALL sp_login('Carlos.perez', 'Clave_mala', @r1);
+    CALL sp_login('Carlos.perez', 'Clave_mala', @r2);
+    CALL sp_login('Carlos.perez', 'Clave_mala', @r3);
+    CALL sp_login('Carlos.perez', 'Carlos2026!', @r4);--aunque ahora sea correcta el usuario esta bloqueado
+    SELECT @r1, @r2, @r3, @r4;
+
+    SELECT nombre_usuario, intentos_fallidos, bloqueado, FROM usuarios;
+
+    --Cambio de contraseña 
+    CALL sp_cambiar_password('ana.gomez', 'AnaGomez2026', 'NuevaClave2026', @r);
+    SELECT @1 AS cambio;
+
+    --Evidencia de auditoria]: aparecen el bloqueo y cambio de clave 
+    SELECT * FROM auditoria_usuarios;
+
+    --El administrador desbloqeua al usuario
+    UPDATE usuarios SET bloqueado = FALSE, intentos_fallidos = 0
+    WHERE nombre_usuario = 'carlos.perez';
+    
+
+
