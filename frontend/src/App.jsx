@@ -25,17 +25,7 @@ function App() {
 
       {/*ruta publica cualquiera puede entrar a / login*/}
       <Route path="/login" element={<LoginPage />} />
-
-      {/*rutas privadas, solo accesibles si estas logueado*/}
-      <Route
-        path="/dashboard"
-        element={
-          <ProtectedRoute>
-            <DashboardDemo />
-          </ProtectedRoute>
-        }
-      />
-
+      
       {/*cualquier otra url q que no coincida con las anteriores */}
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
