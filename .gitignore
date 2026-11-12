@@ -1,10 +1,7 @@
 #Dependencias 
 node_modules/
 **/node_modules/
-# variables de entorno
-.env
-.env.*
-!.env.example
+
 
 #buils /compilacion
 /dist/
