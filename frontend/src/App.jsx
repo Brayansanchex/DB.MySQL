@@ -28,8 +28,18 @@ function App() {
       
       {/*cualquier otra url q que no coincida con las anteriores */}
       <Route path="*" element={<NotFoundPage />} />
-    </Routes>
-  );
+
+      {/*grupo de rutas protegidas: todo lo que este dentro este
+      route solo se muestra si ProtectedRoute confirma que hay sesion activa; si no, redirige a /login */}
+      <Route element={<ProtectedRoute/>}>
+      <Route path="/dashboard" element={<DashboardLayout /> }>
+      <Route index element={<DashboardHome/>}/>
+      <Route path="usuarios" element={<UsuariosPage/>}/>
+
+      </Route>
+    </Route>
+  </Routes>
+  )
 }
 
 export default App;
