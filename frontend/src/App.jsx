@@ -5,16 +5,9 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import ProtectedRoute from './routes/ProtectedRoute';
 //Paginas publicas y privadas de la aplicacion 
 import LoginPage from './pages/LoginPage';
-import NotFoundPage from './pages/NotFoundPage';
+import DashboardHome from './pages/DashboardHome';
+import NotFoundPage from './pages/DashboardHome';
 
-function DashboardDemo() {
-  return (
-    <div className="container py-5">
-      <h1 className="mb-3">Dashboard</h1>
-      <p className="text-muted">Bienvenido al sistema de inventario.</p>
-    </div>
-  );
-}
 
 function App() {
   return (
@@ -25,9 +18,6 @@ function App() {
 
       {/*ruta publica cualquiera puede entrar a / login*/}
       <Route path="/login" element={<LoginPage />} />
-      
-      {/*cualquier otra url q que no coincida con las anteriores */}
-      <Route path="*" element={<NotFoundPage />} />
 
       {/*grupo de rutas protegidas: todo lo que este dentro este
       route solo se muestra si ProtectedRoute confirma que hay sesion activa; si no, redirige a /login */}
@@ -38,6 +28,8 @@ function App() {
 
       </Route>
     </Route>
+          {/*cualquier otra url q que no coincida con las anteriores */}
+      <Route path="*" element={<NotFoundPage />} />
   </Routes>
   )
 }
