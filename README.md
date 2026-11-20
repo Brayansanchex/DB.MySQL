@@ -87,3 +87,12 @@ React solo se encarga de la interfaz grafica para el resto utilizamos:
 -frontend/src/pages/DashboardHome.jsx
 -frontend/src/pages/NotFoundPage.jsx ------------------------
 -editar frontend/src/App.jsx
+
+-11 Crear la pantalla de gestion de ususarios con CRUD y A/D se usan datos simulados en javaScript
+-11.1 se crean estos archivos
+-frontend/src/data/mockUsuarios.js
+-frontend/src/hooks/useCrudSimulado.js
+-frontend/src/components/common/EstadoBadge.jxs
+-frontend/src/components/common/ConfirmModal.jxs
+-frontend/src/components/usuarios/UsuarioFromModal.jxs
+-frontend/src/pages/usuariospage.jxs
